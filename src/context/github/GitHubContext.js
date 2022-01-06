@@ -3,9 +3,6 @@ import githubReducer from './GitHubReducer'
 
 const GithubContext = createContext()
 
-const GITHUB_URL = process.env.REACT_APP_GITHUB_URL
-const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN
-
 export const GithubProvider = ({ children }) => {
   const initialState = {
     users: [],
@@ -15,101 +12,6 @@ export const GithubProvider = ({ children }) => {
   }
 
   const [state, dispatch] = useReducer(githubReducer, initialState)
-
-  // Get search results
-  const searchUsers = async (text) => {
-    setLoading()
-
-    const params = new URLSearchParams({
-      q: text,
-    })
-
-    // GitHub Personal Auth Tokens keep disappearing
-    const authHeader = GITHUB_TOKEN
-      ? {
-          header: {
-            Authorization: GITHUB_TOKEN,
-          },
-        }
-      : {}
-
-    const response = await fetch(
-      `${GITHUB_URL}/search/users?${params}`,
-      authHeader
-    )
-
-    const { items } = await response.json()
-
-    dispatch({
-      type: 'GET_USERS',
-      payload: items,
-    })
-  }
-
-  // Get a single user
-  const getUser = async (login) => {
-    setLoading()
-
-    // GitHub Personal Auth Tokens keep disappearing
-    const authHeader = GITHUB_TOKEN
-      ? {
-          header: {
-            Authorization: GITHUB_TOKEN,
-          },
-        }
-      : {}
-
-    const response = await fetch(`${GITHUB_URL}/users/${login}`, authHeader)
-
-    if (response.status == 404) {
-      window.location = '/notfound'
-    } else {
-      const data = await response.json()
-
-      dispatch({
-        type: 'GET_USER',
-        payload: data,
-      })
-    }
-  }
-
-  // Get user repos
-  const getUserRepos = async (login) => {
-    setLoading()
-
-    const params = new URLSearchParams({
-      sort: 'created',
-      per_page: 10,
-    })
-
-    // GitHub Personal Auth Tokens keep disappearing
-    const authHeader = GITHUB_TOKEN
-      ? {
-          header: {
-            Authorization: GITHUB_TOKEN,
-          },
-        }
-      : {}
-
-    const response = await fetch(
-      `${GITHUB_URL}/users/${login}/repos?${params}`,
-      authHeader
-    )
-
-    const data = await response.json()
-
-    dispatch({
-      type: 'GET_REPOS',
-      payload: data,
-    })
-  }
-
-  // Clear users from state
-  const clearUsers = () => {
-    dispatch({
-      type: 'CLEAR_USERS',
-    })
-  }
 
   // Set loading
   const setLoading = () => {
@@ -121,14 +23,8 @@ export const GithubProvider = ({ children }) => {
   return (
     <GithubContext.Provider
       value={{
-        users: state.users,
-        user: state.user,
-        repos: state.repos,
-        loading: state.loading,
-        searchUsers,
-        getUser,
-        clearUsers,
-        getUserRepos,
+        ...state,
+        dispatch,
       }}
     >
       {children}
