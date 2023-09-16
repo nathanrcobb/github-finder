@@ -6,15 +6,13 @@ const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN
 // GitHub Personal Auth Tokens keep disappearing
 const authHeader = GITHUB_TOKEN
   ? {
-      header: {
-        Authorization: GITHUB_TOKEN,
-      },
+      Authorization: `Bearer ${GITHUB_TOKEN}`,
     }
   : {}
 
 const github = axios.create({
   baseURL: GITHUB_URL,
-  header: authHeader,
+  headers: authHeader,
 })
 
 // Get search results
