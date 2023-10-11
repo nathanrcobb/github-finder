@@ -28,7 +28,7 @@ Once the above is installed:
 
 ## Usage
 
-Rename **_.env.example_** to **_.env_**
+Rename **_.env.template_** to **_.env_**
 
 You can use the Github API without a personal token, but if you want to use your token, add it to the .env file
 
